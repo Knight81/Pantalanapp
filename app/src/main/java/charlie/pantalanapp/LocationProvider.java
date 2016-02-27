@@ -11,16 +11,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
+
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
 
 public class LocationProvider implements
         GoogleApiClient.ConnectionCallbacks, OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS            = 3000;
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 3000;
 
 
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS    =
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     public static final int LOCATION_UPDATES = 1;
@@ -30,6 +32,7 @@ public class LocationProvider implements
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
+    private ArrayList<LocationListener> mLocationListeners = new ArrayList<>();
 
     public LocationProvider(Context context) {
 
@@ -52,8 +55,8 @@ public class LocationProvider implements
                 .build();
     }
 
-    public void createLocationRequest () {
-        Log.d("Location","Created location request");
+    public void createLocationRequest() {
+        Log.d("Location", "Created location request");
         mLocationRequest = new LocationRequest()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS)
@@ -64,7 +67,7 @@ public class LocationProvider implements
 
         LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
 
-        boolean gps_enabled     = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         if (!gps_enabled && !network_enabled)
@@ -103,26 +106,24 @@ public class LocationProvider implements
 //        LocationServices.FusedLocationApi.removeLocationUpdates(
         //mGoogleApiClient, this);
         if (location != null) {
-            Log.d("Location changed","Location changed");
+            notifyLocationChanged(location);
         }
 
     }
-
-
 
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
         Log.e("[ERROR]", "GetLastKnownLocationUsecaseController, onConnectionFailed (116)- " +
-                " ConnectionResult: "+connectionResult.getErrorCode());
+                " ConnectionResult: " + connectionResult.getErrorCode());
     }
 
     @Override
     public void onConnectionSuspended(int i) {
 
         Log.e("[ERROR]", "GetLastKnownLocationUsecaseController, onConnectionSuspended (125)- " +
-                "ErrorCode: "+i);
+                "ErrorCode: " + i);
     }
 
     public class LocationWrapper {
@@ -130,7 +131,7 @@ public class LocationProvider implements
         private boolean isTheCurrentLocation;
         private Location location;
 
-        LocationWrapper( Location location, boolean isTheLastLocation) {
+        LocationWrapper(Location location, boolean isTheLastLocation) {
 
             this.isTheCurrentLocation = isTheLastLocation;
             this.location = location;
@@ -145,5 +146,15 @@ public class LocationProvider implements
 
             return location;
         }
+    }
+
+    private void notifyLocationChanged(Location location) {
+        for (LocationListener listener :
+                mLocationListeners) {
+            listener.onLocationReceived(location);
+        }
+    }
+    public void addLocationListener(LocationListener locationListener){
+        mLocationListeners.add(locationListener);
     }
 }
