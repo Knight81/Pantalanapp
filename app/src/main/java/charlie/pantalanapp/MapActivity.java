@@ -34,7 +34,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     UDOOConnection.Listener udooConnectionListener = new UDOOConnection.Listener() {
         @Override
-        public void gotPositonUpdate(List<Integer> measures) {
+        public void gotPositonUpdate(List<Float> measures) {
             Log.i("~~~", "Got measures " + measures.get(0) + " " + measures.get(1) + " " + measures.get(2));
         }
     };
