@@ -19,10 +19,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.internal.LinkedHashTreeMap;
 import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
     private static final String TAG = MapActivity.class.getName();
@@ -83,9 +85,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 cu = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), MAP_CAMERA_ZOOM_PARKING);
             mMap.animateCamera(cu);
         }
+        sendLocationtoServer(location);
     }
-
-
 
     private void showPantalanesOnMap() {
         for (Pantalan pantalan :
@@ -106,5 +107,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         i.putExtra("Pantalan",marker.getTitle());
         startActivity(i);
         return false;
+    }
+    private  void sendLocationtoServer(Location location){
+        Map<String,String> parameters = new LinkedHashTreeMap<>();
+        parameters.put("licensePlate","DEADBEEF");
+        parameters.put("lat",Double.toString(location.getLatitude()));
+        parameters.put("lng",Double.toString(location.getLongitude()));
+        RestService.getInstance().updateBoat(parameters);
     }
 }
