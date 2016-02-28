@@ -1,6 +1,7 @@
 package charlie.pantalanapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -28,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
+public class MapActivity extends Activity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
     private static final String TAG = MapActivity.class.getName();
     private static final float MAP_CAMERA_ZOOM = 12;
     private static final float MAP_CAMERA_ZOOM_PARKING = 17;
@@ -36,14 +38,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private LocationProvider mLocationManager;
     private PantalanApp application;
     private boolean isParking = false;
-    UDOOConnection udooConnection = new UDOOConnection();
-
-    UDOOConnection.Listener udooConnectionListener = new UDOOConnection.Listener() {
-        @Override
-        public void gotPositonUpdate(List<Float> measures) {
-            Log.i("~~~", "Got measures " + measures.get(0) + " " + measures.get(1) + " " + measures.get(2));
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +50,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         application = (PantalanApp) getApplication();
-
-        udooConnection.addListener(udooConnectionListener);
-    }
-
-    @Override
-    protected void onPause() {
-        udooConnection.removeListener(udooConnectionListener);
-        super.onPause();
     }
 
 
@@ -117,7 +103,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         Map<String,String> parameters = new LinkedHashTreeMap<>();
         parameters.put("licensePlate","DEADBEEF");
         parameters.put("lat",Double.toString(location.getLatitude()));
-        parameters.put("lng",Double.toString(location.getLongitude()));
+        parameters.put("lng", Double.toString(location.getLongitude()));
         RestService.getInstance().updateBoat(parameters);
+    }
+    public void beginDocking(View v){
+        Intent intent = new Intent(this,ParkingActivity.class);
+        startActivity(intent);
     }
 }

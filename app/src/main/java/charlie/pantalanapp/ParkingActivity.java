@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,6 +24,16 @@ import java.util.List;
 public class ParkingActivity extends AppCompatActivity {
     int windowwidth;
     int windowheight;
+
+    UDOOConnection mUdooConnection = new UDOOConnection();
+    UDOOConnection.Listener mUdooConnectionListener = new UDOOConnection.Listener() {
+        @Override
+        public void gotPositonUpdate(List<Float> measures) {
+             updateSensorGUI(measures);
+        }
+    };
+    private ImageView barquito;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -40,22 +51,18 @@ public class ParkingActivity extends AppCompatActivity {
                     @Override
                     public void onGlobalLayout() {
                         view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        UDOOConnection udooConnection = new UDOOConnection();
-                        UDOOConnection.Listener udooConnectionListener = new UDOOConnection.Listener() {
-                            @Override
-                            public void gotPositonUpdate(List<Float> measures) {
-                                Log.i("~~~", "Got measures " + measures.get(0) + " " + measures.get(1) + " " + measures.get(2));
-                                updateSensorGUI(measures);
-
-                            }
-                        };
-                        udooConnection.addListener(udooConnectionListener);
+                        mUdooConnection.addListener(mUdooConnectionListener);
                     }
                 });
         windowwidth = getWindowManager().getDefaultDisplay().getWidth();
         windowheight = getWindowManager().getDefaultDisplay().getHeight();
-        final ImageView barquito = (ImageView) findViewById(R.id.boatImage);
+        barquito = (ImageView) findViewById(R.id.boatImage);
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mUdooConnection.removeListener(mUdooConnectionListener);
     }
 
     public void updateSensorGUI(final List<Float> measures){
@@ -65,13 +72,18 @@ public class ParkingActivity extends AppCompatActivity {
 
                 TextView leftSensor = (TextView) findViewById(R.id.LeftSensor);
                 TextView rightSensor = (TextView) findViewById(R.id.RightSensor);
-                TextView frontSensor = (TextView) findViewById(R.id.FrontSensor);
                 leftSensor.setText(Float.toString(measures.get(0)));
-                rightSensor.setText(Float.toString(measures.get(1)));
-                frontSensor.setText(Float.toString(measures.get(2)));
-
+                rightSensor.setText(Float.toString(measures.get(2)));
+                setBoatMargins(measures.get(0), measures.get(2));
             }
         });
 
+    }
+    public void setBoatMargins(float left,float top){
+        int marginleft = (int) ((int) 2.17*left+350);
+        int margintop = (int) (top*3+ 80);
+        barquito.setX(marginleft);
+        barquito.setY(margintop);
+        barquito.invalidate();
     }
 }

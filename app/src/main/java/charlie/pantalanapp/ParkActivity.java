@@ -53,7 +53,6 @@ public class ParkActivity extends AppCompatActivity {
         parameters.put("withSailor", Boolean.toString(checkBox.isPressed()));
         parameters.put("page", "1");
         RestService.getInstance().requestDock(parameters);
-        Intent intent = new Intent(this,ParkingActivity.class);
-        startActivity(intent);
+        finish();
     }
 }

@@ -19,8 +19,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/boatImage"
         android:src="@drawable/boat"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentStart="true"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,15 +41,5 @@
         android:layout_marginStart="131dp"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/boatImage" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Front"
-        android:id="@+id/FrontSensor"
-        android:layout_alignTop="@+id/boatImage"
-        android:layout_centerHorizontal="true" />
-
 
 </RelativeLayout>
