@@ -19,12 +19,12 @@ import retrofit.http.GET;
 public class UDOOConnection {
 
     public interface Listener {
-        void gotPositonUpdate(List<Integer> measures);
+        void gotPositonUpdate(List<Float> measures);
     }
 
     public interface UDOOService {
         @GET("/")
-        void getMeasures(Callback<List<Integer>> callback);
+        void getMeasures(Callback<List<Float>> callback);
     }
 
     private RestAdapter mRetrofit;
@@ -33,10 +33,10 @@ public class UDOOConnection {
     private Timer checkStatus;
     private CheckTimerTask checkTimerTask;
 
-    private Callback<List<Integer>> mGetMeasuresCallback = new Callback<List<Integer>>() {
+    private Callback<List<Float>> mGetMeasuresCallback = new Callback<List<Float>>() {
 
         @Override
-        public void success(List<Integer> measures, Response response) {
+        public void success(List<Float> measures, Response response) {
             Log.e("~~", "aw yiss "+response);
             notifyListeners(measures);
         }
@@ -91,23 +91,23 @@ public class UDOOConnection {
         }
     }
 
-    private void notifyListeners(List<Integer> measures) {
+    private void notifyListeners(List<Float> measures) {
         for (Listener listener: mListeners) {
             listener.gotPositonUpdate(measures);
         }
     }
 
     private class CheckTimerTask extends TimerTask {
-        int m = 100;
+//        int m = 100;
         @Override
         public void run() {
-            //mUdooService.getMeasures(mGetMeasuresCallback);
-            m += (int)(Math.random() * 5) - 10;
-            List<Integer> measures = new ArrayList<>();
-            measures.add(m);
-            measures.add(m);
-            measures.add(m);
-            notifyListeners(measures);
+            mUdooService.getMeasures(mGetMeasuresCallback);
+//            m += (int)(Math.random() * 5) - 10;
+//            /List<Integer> measures = new ArrayList<>();
+//            measures.add(m);
+//            measures.add(m);
+//            measures.add(m);
+//            notifyListeners(measures);
         }
     }
 
