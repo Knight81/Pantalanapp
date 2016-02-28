@@ -1,6 +1,7 @@
 package charlie.pantalanapp;
 
 import android.annotation.SuppressLint;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,14 +25,24 @@ import java.util.List;
 public class ParkingActivity extends AppCompatActivity {
     int windowwidth;
     int windowheight;
-
+    MediaPlayer mp;
     UDOOConnection mUdooConnection = new UDOOConnection();
     UDOOConnection.Listener mUdooConnectionListener = new UDOOConnection.Listener() {
         @Override
         public void gotPositonUpdate(List<Float> measures) {
              updateSensorGUI(measures);
+             if(measures.get(0) < 10 && measures.get(0) > 0 || measures.get(2) < 10){
+                 playsound();
+             }
         }
     };
+
+    private void playsound() {
+        if(!mp.isPlaying()){
+            mp.start();
+        }
+    }
+
     private ImageView barquito;
 
     @Override
@@ -57,6 +68,7 @@ public class ParkingActivity extends AppCompatActivity {
         windowwidth = getWindowManager().getDefaultDisplay().getWidth();
         windowheight = getWindowManager().getDefaultDisplay().getHeight();
         barquito = (ImageView) findViewById(R.id.boatImage);
+        mp = MediaPlayer.create(this, R.raw.proximity);
     }
 
     @Override
