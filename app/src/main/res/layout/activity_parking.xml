@@ -19,4 +19,35 @@
         android:src="@drawable/boat"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Left"
+        android:id="@+id/LeftSensor"
+        android:layout_alignTop="@+id/RightSensor"
+        android:layout_toStartOf="@+id/boatImage"
+        android:layout_marginEnd="113dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Right"
+        android:id="@+id/RightSensor"
+        android:layout_marginStart="131dp"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/boatImage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Front"
+        android:id="@+id/FrontSensor"
+        android:layout_alignTop="@+id/boatImage"
+        android:layout_centerHorizontal="true" />
+
+
 </RelativeLayout>
