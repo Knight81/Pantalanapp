@@ -18,6 +18,7 @@
 
         <activity
             android:name=".MapActivity"
+            android:screenOrientation="landscape"
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +29,12 @@
         <activity
             android:name=".ParkActivity"
             android:label="@string/title_activity_park"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ParkingActivity"
+            android:label="parkingActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
