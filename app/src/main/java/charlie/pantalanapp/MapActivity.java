@@ -86,6 +86,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public boolean onMarkerClick(Marker marker) {
         Intent i = new Intent(this,ParkActivity.class);
+        i.putExtra("Pantalan",marker.getTitle());
         startActivity(i);
         return false;
     }
