@@ -1,6 +1,7 @@
 package charlie.pantalanapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -15,18 +16,19 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback,LocationListener {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
     private static final String TAG = MapActivity.class.getName();
-    private static final float MAP_CAMERA_ZOOM = 14;
+    private static final float MAP_CAMERA_ZOOM = 12;
     private static final float MAP_CAMERA_ZOOM_PARKING = 17;
     private GoogleMap mMap;
     private LocationProvider mLocationManager;
-    private ArrayList<Pantalan> mAvailablePantalanes = new ArrayList<>();
+    private PantalanApp application;
     private boolean isParking = false;
 
 
@@ -37,6 +39,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        application = (PantalanApp) getApplication();
     }
 
 
@@ -49,36 +52,41 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mMap.setMyLocationEnabled(true);
         mLocationManager = new LocationProvider(this);
         mLocationManager.addLocationListener(this);
-        loadPantalanes();
+        mMap.setOnMarkerClickListener(this);
+        showPantalanesOnMap();
     }
 
     @Override
     public void onLocationReceived(Location location) {
         if (mMap != null) {
             CameraUpdate cu;
-            if(!isParking)
+            if (!isParking)
                 cu = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), MAP_CAMERA_ZOOM);
             else
                 cu = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), MAP_CAMERA_ZOOM_PARKING);
             mMap.animateCamera(cu);
         }
     }
-    //TODO Tweak this bitch
-    public void loadPantalanes(){
-        Pantalan pantalanVigo = new Pantalan(42.241998, -8.722648,"Pantalan Vigo",null);
-        mAvailablePantalanes.add(pantalanVigo);
-        showPantalanesOnMap();
-    }
+
+
 
     private void showPantalanesOnMap() {
-        for (Pantalan pantalan:
-             mAvailablePantalanes) {
+        for (Pantalan pantalan :
+                application.getAvailablePantalanes()) {
             final IconGenerator iconGenerator = new IconGenerator(this);
             iconGenerator.setBackground(getResources().getDrawable(R.drawable.markership));
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(pantalan.getLatLng())
-                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(iconGenerator.makeIcon(),50,82,false)));
+                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(iconGenerator.makeIcon(), 50, 82, false)))
+                    .title(pantalan.getName());
             mMap.addMarker(markerOptions);
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Intent i = new Intent(this,ParkActivity.class);
+        startActivity(i);
+        return false;
     }
 }
